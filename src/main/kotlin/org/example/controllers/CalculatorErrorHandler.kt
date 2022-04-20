@@ -31,4 +31,8 @@ class CalculatorErrorHandler {
     @ExceptionHandler(HttpMessageNotReadableException::class)
     fun handleWrongMessageFormat(e: Exception): ResponseEntity<CalculationResponse>
         = ResponseEntity(CalculationResponse.asError(e.message ?: "Improperly formatted request"), HttpStatus.BAD_REQUEST)
+
+    @ExceptionHandler(Exception::class)
+    fun handleOtherException(e: Exception): ResponseEntity<CalculationResponse>
+        = ResponseEntity(CalculationResponse.asError(e.message ?: "An unknown error occurred"), HttpStatus.INTERNAL_SERVER_ERROR)
 }

@@ -5,9 +5,9 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class DivideRequest(
-    @JsonProperty("dividend")
+    @JsonProperty("dividend", required = true)
     val dividend: Double,
 
-    @JsonProperty("divisor")
+    @JsonProperty("divisor", required = true)
     val divisor: Double,
 )

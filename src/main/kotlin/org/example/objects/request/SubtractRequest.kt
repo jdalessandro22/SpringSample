@@ -5,9 +5,9 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class SubtractRequest(
-    @JsonProperty("minuend")
+    @JsonProperty("minuend", required = true)
     val minuend: Double,
 
-    @JsonProperty("subtrahend")
+    @JsonProperty("subtrahend", required = true)
     val subtrahend: Double,
 )

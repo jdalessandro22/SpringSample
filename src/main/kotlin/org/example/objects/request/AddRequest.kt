@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class AddRequest(
-    @JsonProperty("addends")
+    @JsonProperty("addends", required = true)
     val addends: DoubleArray,
 ) {
     override fun equals(other: Any?): Boolean {
