@@ -1,0 +1,34 @@
+package org.example.controllers
+
+import org.example.objects.error.DivideByZeroException
+import org.example.objects.request.AddRequest
+import org.example.objects.request.DivideRequest
+import org.example.objects.request.MultiplyRequest
+import org.example.objects.request.SubtractRequest
+import org.example.objects.response.CalculationResponse
+import org.example.utils.product
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RestController
+
+@Suppress("unused")
+@RestController
+class CalculatorController {
+    @PostMapping("add")
+    fun add(@RequestBody request: AddRequest)
+        = CalculationResponse.asSuccess(request.addends.sum())
+
+    @PostMapping("subtract")
+    fun subtract(@RequestBody request: SubtractRequest)
+        = CalculationResponse.asSuccess(request.minuend - request.subtrahend)
+
+    @PostMapping("multiply")
+    fun multiply(@RequestBody request: MultiplyRequest)
+        = CalculationResponse.asSuccess(request.factors.product())
+
+    @PostMapping("divide")
+    fun divide(@RequestBody request: DivideRequest)
+        = if (request.divisor == 0.0)
+            throw DivideByZeroException()
+        else CalculationResponse.asSuccess(request.dividend / request.divisor)
+}
