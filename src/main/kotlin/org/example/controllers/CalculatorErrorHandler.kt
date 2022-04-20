@@ -6,6 +6,7 @@ import org.example.objects.NotEnoughFactorsException
 import org.example.objects.response.CalculationResponse
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 
@@ -25,5 +26,9 @@ class CalculatorErrorHandler {
 
     @ExceptionHandler(ArithmeticException::class)
     fun handleArithmeticException(e: Exception): ResponseEntity<CalculationResponse>
-        = ResponseEntity(CalculationResponse.asError(e.message ?: "A computation error occurred"), HttpStatus.BAD_REQUEST)
+        = ResponseEntity(CalculationResponse.asError(e.message ?: "A computation error occurred"), HttpStatus.INTERNAL_SERVER_ERROR)
+
+    @ExceptionHandler(HttpMessageNotReadableException::class)
+    fun handleWrongMessageFormat(e: Exception): ResponseEntity<CalculationResponse>
+        = ResponseEntity(CalculationResponse.asError(e.message ?: "Improperly formatted request"), HttpStatus.BAD_REQUEST)
 }
