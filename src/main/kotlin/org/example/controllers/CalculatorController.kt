@@ -1,6 +1,8 @@
 package org.example.controllers
 
-import org.example.objects.error.DivideByZeroException
+import org.example.objects.DivideByZeroException
+import org.example.objects.NotEnoughAddendsException
+import org.example.objects.NotEnoughFactorsException
 import org.example.objects.request.AddRequest
 import org.example.objects.request.DivideRequest
 import org.example.objects.request.MultiplyRequest
@@ -16,7 +18,9 @@ import org.springframework.web.bind.annotation.RestController
 class CalculatorController {
     @PostMapping("add")
     fun add(@RequestBody request: AddRequest)
-        = CalculationResponse.asSuccess(request.addends.sum())
+        = if (request.addends.size < 2)
+            throw NotEnoughAddendsException()
+        else CalculationResponse.asSuccess(request.addends.sum())
 
     @PostMapping("subtract")
     fun subtract(@RequestBody request: SubtractRequest)
@@ -24,7 +28,9 @@ class CalculatorController {
 
     @PostMapping("multiply")
     fun multiply(@RequestBody request: MultiplyRequest)
-        = CalculationResponse.asSuccess(request.factors.product())
+        = if (request.factors.size < 2)
+            throw NotEnoughFactorsException()
+        else CalculationResponse.asSuccess(request.factors.product())
 
     @PostMapping("divide")
     fun divide(@RequestBody request: DivideRequest)
