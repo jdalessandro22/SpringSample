@@ -1,15 +1,10 @@
 package org.example.controllers
 
-import org.example.objects.DivideByZeroException
-import org.example.objects.NotEnoughAddendsException
-import org.example.objects.NotEnoughFactorsException
 import org.example.objects.request.AddRequest
 import org.example.objects.request.DivideRequest
 import org.example.objects.request.MultiplyRequest
 import org.example.objects.request.SubtractRequest
-import org.example.objects.response.CalculationResponse
 import org.example.services.CalculatorService
-import org.example.utils.product
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
