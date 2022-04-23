@@ -8,6 +8,9 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
+import org.springframework.web.HttpMediaTypeNotAcceptableException
+import org.springframework.web.HttpMediaTypeNotSupportedException
+import org.springframework.web.HttpRequestMethodNotSupportedException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 
@@ -44,6 +47,33 @@ class CalculatorErrorHandler {
         return ResponseEntity(
             CalculationResponse.asError(e.message ?: "Improperly formatted request"),
             HttpStatus.BAD_REQUEST,
+        )
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException::class)
+    fun handleWrongHttpVerb(e: HttpRequestMethodNotSupportedException): ResponseEntity<CalculationResponse> {
+        LOGGER.error("Received request with unsupported request method {}", e.method)
+        return ResponseEntity(
+            CalculationResponse.asError("Wrong HTTP verb ${e.method}: please use one of ${e.supportedMethods.contentToString()}"),
+            HttpStatus.METHOD_NOT_ALLOWED,
+        )
+    }
+
+    @ExceptionHandler(HttpMediaTypeNotSupportedException::class)
+    fun handleWrongRequestContentType(e: HttpMediaTypeNotSupportedException): ResponseEntity<CalculationResponse> {
+        LOGGER.error("Received request body with unsupported content type {}", e.contentType)
+        return ResponseEntity(
+            CalculationResponse.asError("Wrong content type ${e.contentType} for request body: please use application/json"),
+            HttpStatus.UNSUPPORTED_MEDIA_TYPE,
+        )
+    }
+
+    @ExceptionHandler(HttpMediaTypeNotAcceptableException::class)
+    fun handleUnfulfillableAcceptHeader(e: HttpMediaTypeNotAcceptableException): ResponseEntity<String> {
+        LOGGER.error("Received request with unfulfillable Accept header")
+        return ResponseEntity(
+            "Unable to respond with content type requested in Accept header. This endpoint produces application/json.",
+            HttpStatus.NOT_ACCEPTABLE,
         )
     }
 
