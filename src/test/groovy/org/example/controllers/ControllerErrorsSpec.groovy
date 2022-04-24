@@ -10,7 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.web.servlet.MockMvc
 import spock.lang.Specification
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @SpringBootTest
@@ -68,5 +68,52 @@ class ControllerErrorsSpec extends Specification {
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(rq))
         ).andExpect(status().isBadRequest())
+    }
+
+    def "#verb request receives 405"() {
+        when:
+        AddRequest rq = new AddRequest(3.2, 4.7, 5.8)
+
+        then:
+        mvc.perform(
+                call("/add")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(rq))
+        ).andExpect(status().isMethodNotAllowed())
+
+        where:
+        verb     | call
+        "GET"    | { path -> get(path) }
+        "PUT"    | { path -> put(path) }
+        "PATCH"  | { path -> patch(path) }
+        "DELETE" | { path -> delete(path) }
+    }
+
+    def "request with Accept: #ctype header receives 406"() {
+        when:
+        AddRequest rq = new AddRequest(3.2, 4.7, 5.8)
+
+        then:
+        mvc.perform(
+                post("/add")
+                .contentType("application/json")
+                .accept(ctype)
+                .content(objectMapper.writeValueAsString(rq))
+        ).andExpect(status().isNotAcceptable())
+
+        where:
+        ctype << ["application/pdf", "text/plain", "text/html", "image/png"]
+    }
+
+    def "request with urlencoded body receives 415"() {
+        when:
+        String rq = "dividend=50&divisor=5"
+
+        then:
+        mvc.perform(
+                post("/divide")
+                .contentType("application/x-www-form-urlencoded")
+                .content(rq)
+        ).andExpect(status().isUnsupportedMediaType())
     }
 }
